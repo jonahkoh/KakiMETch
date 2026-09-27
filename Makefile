@@ -1,4 +1,4 @@
-.PHONY: install install-frontend install-backend install-hooks dev dev-frontend dev-backend dev-assessment dev-matching dev-registry dev-scheduling
+.PHONY: install install-frontend install-backend install-hooks dev dev-frontend dev-backend dev-assessment dev-matching dev-registry dev-scheduling k8s-images k8s-secret k8s-forward
 
 BACKEND_SERVICES := assessment matching registry scheduling
 
@@ -33,3 +33,13 @@ dev-backend:
 
 dev:
 	$(MAKE) -j 5 dev-frontend $(foreach s,$(BACKEND_SERVICES),dev-$(s))
+
+k8s-images:
+	eval $$(minikube docker-env --shell bash) && docker compose build
+
+k8s-secret:
+	kubectl create namespace kakimetch --dry-run=client -o yaml | kubectl apply -f -
+	kubectl -n kakimetch create secret generic kakimetch-env --from-env-file=backend/.env --dry-run=client -o yaml | kubectl apply -f -
+
+k8s-forward:
+	kubectl -n kakimetch port-forward svc/assessment 8001:8000 & 	kubectl -n kakimetch port-forward svc/matching 8002:8000 & 	kubectl -n kakimetch port-forward svc/registry 8003:8000 & 	kubectl -n kakimetch port-forward svc/scheduling 8004:8000 & 	wait
