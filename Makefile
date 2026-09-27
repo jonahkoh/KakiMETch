@@ -42,4 +42,8 @@ k8s-secret:
 	kubectl -n kakimetch create secret generic kakimetch-env --from-env-file=backend/.env --dry-run=client -o yaml | kubectl apply -f -
 
 k8s-forward:
-	kubectl -n kakimetch port-forward svc/assessment 8001:8000 & 	kubectl -n kakimetch port-forward svc/matching 8002:8000 & 	kubectl -n kakimetch port-forward svc/registry 8003:8000 & 	kubectl -n kakimetch port-forward svc/scheduling 8004:8000 & 	wait
+	kubectl -n kakimetch port-forward svc/assessment 8001:8000 & \
+	kubectl -n kakimetch port-forward svc/matching 8002:8000 & \
+	kubectl -n kakimetch port-forward svc/registry 8003:8000 & \
+	kubectl -n kakimetch port-forward svc/scheduling 8004:8000 & \
+	wait
