@@ -4,6 +4,10 @@ Runs the four backend services on a local minikube cluster, synced from Git by A
 The frontend runs outside the cluster (`npm run dev`) and reaches the services through
 port-forwards on 8001–8004, which are its default API URLs.
 
+![KakiMETch on minikube + Argo CD](architecture.png)
+
+Source: [architecture.excalidraw](architecture.excalidraw) (open at excalidraw.com; re-export the PNG after editing).
+
 ## First-time setup
 
     minikube start
