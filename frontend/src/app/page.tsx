@@ -12,26 +12,26 @@ import {
 import { Logo } from "@/components/logo";
 
 export const metadata: Metadata = {
-  title: "KakiMETch | Escort matching for Loving Heart",
+  title: "KakiMETch | Daily MET scheduling for Loving Heart",
   description:
-    "KakiMETch turns Loving Heart's informal escort-matching knowledge into clear, explainable suggestions — the coordinator reviews and confirms every match.",
+    "KakiMETch helps Loving Heart allocate daily MET trips across vehicles, with explainable escort matching layered into a human-reviewed schedule.",
 };
 
 const steps = [
   {
     icon: CalendarCheck,
-    title: "Review the day's referrals",
-    body: "Accepted appointments show up as simple case blocks — name, appointment time and destination. Nothing else competes for attention.",
+    title: "Enter the day's appointments",
+    body: "Add the actual pickup, hospital, appointment time and estimated return-ready time for each accepted patient.",
   },
   {
     icon: Users,
-    title: "See explainable suggestions",
-    body: "KakiMETch ranks escorts by availability, wheelchair-handling capability, dialect and gender preference, and shows the plain-language reason for each one.",
+    title: "See the fastest allocation",
+    body: "KakiMETch proposes a travel-time-minimised plan across both vehicles while protecting every outbound arrival window.",
   },
   {
     icon: CheckCircle2,
-    title: "Confirm the match yourself",
-    body: "Accept a suggestion or choose someone else. Every assignment needs your explicit confirmation before it's scheduled — a no-match is a warning, not a dead end.",
+    title: "Adjust and match escorts",
+    body: "Drag appointments between vehicle lanes, reorder the day, and review escort matching before the final schedule is used.",
   },
 ];
 
@@ -64,7 +64,7 @@ export default function LandingPage() {
           <a href="#how-it-works">How it works</a>
           <a href="#who-its-for">Who it&apos;s for</a>
         </nav>
-        <Link href="/app/matching" className="primary-button header-cta">
+        <Link href="/app/schedule" className="primary-button header-cta">
           Open the tool
         </Link>
       </header>
@@ -72,16 +72,16 @@ export default function LandingPage() {
       <main>
         <section className="landing-hero">
           <div className="hero-copy">
-            <p className="eyebrow">For Loving Heart escort coordinators</p>
-            <h1>Escort matching that keeps you in charge</h1>
+            <p className="eyebrow">For Loving Heart MET coordinators</p>
+            <h1>Plan the day, then keep the final say</h1>
             <p className="hero-lede">
-              KakiMETch turns Rose&apos;s informal matching knowledge —
-              appointment timing, wheelchair handling, dialect and gender
-              preference — into clear, explainable suggestions. You review every
-              match and confirm it yourself.
+              KakiMETch allocates patient appointments across Loving Heart&apos;s
+              vehicles to minimise travel time and protect hospital arrival
+              deadlines. Escort matching remains visible on the same schedule,
+              and every allocation stays editable.
             </p>
             <div className="hero-actions">
-              <Link href="/app/matching" className="primary-button">
+              <Link href="/app/schedule" className="primary-button">
                 Open the tool
               </Link>
               <a href="#how-it-works" className="secondary-button">
@@ -172,10 +172,10 @@ export default function LandingPage() {
               />
             </div>
             <div className="closing-copy">
-              <h2>Ready to see today&apos;s matches?</h2>
-              <p>Open the workspace to review referrals and confirm escorts.</p>
+              <h2>Ready to plan today&apos;s trips?</h2>
+              <p>Open the daily schedule to allocate vehicles and review escorts.</p>
               <div className="hero-actions">
-                <Link href="/app/matching" className="primary-button">
+                <Link href="/app/schedule" className="primary-button">
                   Open the tool
                 </Link>
                 <Link href="/app/registry" className="secondary-button">
@@ -190,10 +190,11 @@ export default function LandingPage() {
       <footer className="landing-footer">
         <Logo />
         <p>
-          KakiMETch is an internal matching tool for Loving Heart&apos;s medical
-          transport coordinators.
+          KakiMETch is an internal scheduling and escort-matching tool for
+          Loving Heart&apos;s medical transport coordinators.
         </p>
         <nav className="footer-links" aria-label="Footer">
+          <Link href="/app/schedule">Daily schedule</Link>
           <Link href="/app/matching">Escort matching</Link>
           <Link href="/app/registry">Patient registry</Link>
         </nav>

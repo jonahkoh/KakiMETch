@@ -2,6 +2,8 @@
 
 This is the internal escort-matching workspace for Loving Heart staff. Accepted appointments appear as quiet patient modules; opening one reveals the patient’s matching needs and three explainable escort suggestions. The admin always selects and confirms the escort.
 
+The daily schedule at `/app/schedule` allocates accepted appointments across Loving Heart's two vehicles, displays escort status on each appointment, and lets an admin drag appointments between lanes or reorder them before rerunning optimisation.
+
 ## Local setup
 
 ```powershell

@@ -3,7 +3,9 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from app.schemas.trip import ConfirmEscortRequest
+from datetime import date, time
+
+from app.schemas.trip import ConfirmEscortRequest, TripCreate
 
 
 def test_override_requires_a_reason():
@@ -19,3 +21,15 @@ def test_override_accepts_a_reason():
     )
 
     assert request.assignment_override is True
+
+
+def test_trip_requires_appointment_specific_pickup_address():
+    with pytest.raises(ValidationError, match="Pickup and destination"):
+        TripCreate(
+            elderly_id=uuid4(),
+            appt_date=date(2026, 10, 7),
+            appt_time=time(8, 30),
+            pickup_address="   ",
+            destination="National University Hospital",
+            return_ready_time=time(11),
+        )

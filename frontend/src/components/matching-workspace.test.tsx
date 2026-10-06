@@ -73,7 +73,7 @@ describe("MatchingWorkspace", () => {
     const patientCard = await screen.findByRole("button", {
       name: /Mdm Lim Siew Hoon/i,
     });
-    expect(patientCard).toHaveTextContent("Tue, 8 Sept 2026 at 10:00 am");
+    expect(patientCard).toHaveTextContent("2026-09-08 at 10:00 am");
     expect(patientCard).toHaveTextContent("Jurong Community Hospital");
     expect(screen.queryByText("Hokkien")).not.toBeInTheDocument();
 

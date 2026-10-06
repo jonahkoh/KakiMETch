@@ -18,12 +18,16 @@ def create_trip(request: TripCreate) -> TripCreated:
                         elderly_id,
                         appt_date,
                         appt_time,
+                        pickup_address,
+                        return_ready_time,
                         destination
                     )
                     values (
                         %(elderly_id)s,
                         %(appt_date)s,
                         %(appt_time)s,
+                        %(pickup_address)s,
+                        %(return_ready_time)s,
                         %(destination)s
                     )
                     returning
@@ -31,7 +35,9 @@ def create_trip(request: TripCreate) -> TripCreated:
                         elderly_id,
                         appt_date,
                         appt_time,
+                        pickup_address,
                         destination,
+                        return_ready_time,
                         status
                     """,
                     request.model_dump(),

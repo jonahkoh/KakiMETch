@@ -2,7 +2,7 @@ from datetime import date, time
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, field_validator, model_validator
 
 from app.schemas.matching_workspace import GenderPreference
 
@@ -11,7 +11,17 @@ class TripCreate(BaseModel):
     elderly_id: UUID
     appt_date: date
     appt_time: time
+    pickup_address: str
     destination: str
+    return_ready_time: time
+
+    @field_validator("pickup_address", "destination")
+    @classmethod
+    def address_not_blank(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Pickup and destination addresses are required.")
+        return normalized
 
 
 class TripCreated(BaseModel):
@@ -19,7 +29,9 @@ class TripCreated(BaseModel):
     elderly_id: UUID
     appt_date: date
     appt_time: time
+    pickup_address: str
     destination: str
+    return_ready_time: time
     status: Literal["pending"]
 
 

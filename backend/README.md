@@ -19,6 +19,11 @@
 - `POST /trips/{trip_id}/confirm-escort`
 - `POST /trips/{trip_id}/cancel-assignment`
 - `GET /schedule`
+- `GET /schedule/day?service_date=YYYY-MM-DD`
+- `POST /schedule/optimise`
+- `PUT /schedule/plans/{plan_id}`
+- `DELETE /schedule/appointments/{trip_id}`
+- `PATCH /schedule/appointments/{trip_id}/return-ready`
 - `GET /registry/patients`
 - `GET /registry/patients/{patient_id}`
 - `POST /registry/patients`
@@ -32,3 +37,5 @@
 - The backend connects directly to Supabase Postgres. Do not commit the local `.env` file or database password.
 - Enable Row Level Security and add authenticated-admin policies before connecting direct Supabase browser CRUD in the frontend.
 - For the matching-only demo, run `python -m scripts.prepare_matching_demo` after importing the workbooks to assess pending escort-required trips and populate the matching queue.
+- Vehicle scheduling uses OR-Tools with two seeded vehicles (`PC2345L` and `PC8213U`). Add `MAPBOX_ACCESS_TOKEN` to `backend/.env` for road travel times. Without it, the UI explicitly labels allocations as local prototype estimates.
+- The day scheduler uses the appointment's own pickup address. It never falls back to the patient's registry address.

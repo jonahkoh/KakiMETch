@@ -63,12 +63,81 @@ export interface AppointmentCreate {
   elderly_id: string;
   appt_date: string;
   appt_time: string;
+  pickup_address: string;
   destination: string;
+  return_ready_time: string;
 }
 
 export interface AppointmentCreated extends AppointmentCreate {
   trip_id: string;
   status: "pending";
+}
+
+export interface VehicleSummary {
+  id: string;
+  plate_number: string;
+  driver_name: string;
+  available_from: string;
+  available_until: string;
+  passenger_pair_capacity: number;
+  max_daily_services: number;
+}
+
+export interface ScheduleAppointment {
+  trip_id: string;
+  elderly_id: string;
+  elderly_name: string;
+  appt_date: string;
+  appt_time: string;
+  pickup_address: string | null;
+  destination: string;
+  return_ready_time: string | null;
+  escort_required: boolean;
+  escort_name: string | null;
+}
+
+export interface RouteStop {
+  kind:
+    | "depot_start"
+    | "outbound_pickup"
+    | "outbound_dropoff"
+    | "return_pickup"
+    | "return_dropoff"
+    | "depot_end";
+  address: string;
+  planned_time: string;
+}
+
+export interface RouteAssignment {
+  trip_id: string;
+  sequence: number;
+  outbound_pickup_at: string | null;
+  outbound_dropoff_at: string | null;
+  return_pickup_at: string | null;
+  return_dropoff_at: string | null;
+  stops: RouteStop[];
+}
+
+export interface VehicleLane {
+  vehicle: VehicleSummary;
+  assignments: RouteAssignment[];
+}
+
+export interface RoutePlan {
+  id: string;
+  service_date: string;
+  status: "optimised" | "manually_adjusted";
+  matrix_source: string;
+  total_travel_minutes: number;
+  unallocated_returns: string[];
+  lanes: VehicleLane[];
+}
+
+export interface DaySchedule {
+  service_date: string;
+  vehicles: VehicleSummary[];
+  appointments: ScheduleAppointment[];
+  plan: RoutePlan | null;
 }
 
 export interface AssessmentResult {
@@ -136,6 +205,36 @@ export const getMatchingQueue = () =>
   request<MatchingQueueItem[]>("/matching-queue");
 
 export const getScheduledTrips = () => request<ScheduledTrip[]>("/schedule");
+
+export const getDaySchedule = (serviceDate: string) =>
+  request<DaySchedule>(`/schedule/day?service_date=${serviceDate}`);
+
+export const optimiseDaySchedule = (serviceDate: string) =>
+  request<RoutePlan>("/schedule/optimise", {
+    method: "POST",
+    body: JSON.stringify({ service_date: serviceDate }),
+  });
+
+export const saveManualPlan = (
+  planId: string,
+  lanes: { vehicle_id: string; trip_ids: string[] }[],
+) =>
+  request<RoutePlan>(`/schedule/plans/${planId}`, {
+    method: "PUT",
+    body: JSON.stringify({ lanes }),
+  });
+
+export const removeScheduleAppointment = (tripId: string) =>
+  request<void>(`/schedule/appointments/${tripId}`, { method: "DELETE" });
+
+export const updateReturnReadyTime = (
+  tripId: string,
+  returnReadyTime: string,
+) =>
+  request<void>(`/schedule/appointments/${tripId}/return-ready`, {
+    method: "PATCH",
+    body: JSON.stringify({ return_ready_time: returnReadyTime }),
+  });
 
 export const getEscortSuggestions = (tripId: string) =>
   request<MatchResult>(`/trips/${tripId}/escort-suggestions?limit=3`);

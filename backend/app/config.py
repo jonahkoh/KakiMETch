@@ -16,9 +16,17 @@ def get_database_url() -> str:
 
 
 def get_allowed_origins() -> list[str]:
-    origins = ["http://localhost:3000"]
+    origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
     frontend_url = os.getenv("FRONTEND_URL")
     if frontend_url:
         origins.append(frontend_url.rstrip("/"))
 
     return origins
+
+
+def get_mapbox_access_token() -> str | None:
+    token = os.getenv("MAPBOX_ACCESS_TOKEN", "").strip()
+    return token or None
