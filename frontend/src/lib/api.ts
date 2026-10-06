@@ -221,10 +221,13 @@ export const getScheduledTrips = () =>
   request<ScheduledTrip[]>("scheduling", "/schedule");
 
 export const getDaySchedule = (serviceDate: string) =>
-  request<DaySchedule>(`/schedule/day?service_date=${serviceDate}`);
+  request<DaySchedule>(
+    "scheduling",
+    `/schedule/day?service_date=${serviceDate}`,
+  );
 
 export const optimiseDaySchedule = (serviceDate: string) =>
-  request<RoutePlan>("/schedule/optimise", {
+  request<RoutePlan>("scheduling", "/schedule/optimise", {
     method: "POST",
     body: JSON.stringify({ service_date: serviceDate }),
   });
@@ -233,19 +236,21 @@ export const saveManualPlan = (
   planId: string,
   lanes: { vehicle_id: string; trip_ids: string[] }[],
 ) =>
-  request<RoutePlan>(`/schedule/plans/${planId}`, {
+  request<RoutePlan>("scheduling", `/schedule/plans/${planId}`, {
     method: "PUT",
     body: JSON.stringify({ lanes }),
   });
 
 export const removeScheduleAppointment = (tripId: string) =>
-  request<void>(`/schedule/appointments/${tripId}`, { method: "DELETE" });
+  request<void>("scheduling", `/schedule/appointments/${tripId}`, {
+    method: "DELETE",
+  });
 
 export const updateReturnReadyTime = (
   tripId: string,
   returnReadyTime: string,
 ) =>
-  request<void>(`/schedule/appointments/${tripId}/return-ready`, {
+  request<void>("scheduling", `/schedule/appointments/${tripId}/return-ready`, {
     method: "PATCH",
     body: JSON.stringify({ return_ready_time: returnReadyTime }),
   });

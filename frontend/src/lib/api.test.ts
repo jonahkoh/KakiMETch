@@ -2,6 +2,7 @@ import { afterEach, expect, test, vi } from "vitest";
 
 import {
   assessAppointment,
+  getDaySchedule,
   getMatchingQueue,
   getPatients,
   getScheduledTrips,
@@ -22,6 +23,11 @@ test.each([
   ],
   ["registry", () => getPatients(), "http://localhost:8003/registry/patients"],
   ["scheduling", () => getScheduledTrips(), "http://localhost:8004/schedule"],
+  [
+    "vehicle scheduling",
+    () => getDaySchedule("2026-10-07"),
+    "http://localhost:8004/schedule/day?service_date=2026-10-07",
+  ],
 ])("%s calls go to that service's default base URL", async (_, call, url) => {
   const fetchMock = vi.fn(async () => Response.json([]));
   vi.stubGlobal("fetch", fetchMock);

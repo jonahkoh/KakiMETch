@@ -6,7 +6,7 @@ from uuid import UUID
 
 from psycopg2.extras import Json
 
-from app.database import get_connection
+from kakimetch_common.database import get_connection
 from app.schemas.vehicle_schedule import (
     DaySchedule,
     ManualPlanUpdate,

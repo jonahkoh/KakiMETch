@@ -7,7 +7,7 @@ from typing import Protocol
 
 import httpx
 
-from app.config import get_mapbox_access_token
+from kakimetch_common.config import get_mapbox_access_token
 
 LH_SERVICE_CENTRE = "600210, Singapore"
 

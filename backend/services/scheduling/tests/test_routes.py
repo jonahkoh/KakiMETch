@@ -6,6 +6,11 @@ EXPECTED_ROUTES = {
     ("POST", "/trips/{trip_id}/confirm-escort"),
     ("POST", "/trips/{trip_id}/cancel-assignment"),
     ("GET", "/schedule"),
+    ("GET", "/schedule/day"),
+    ("POST", "/schedule/optimise"),
+    ("PUT", "/schedule/plans/{plan_id}"),
+    ("DELETE", "/schedule/appointments/{trip_id}"),
+    ("PATCH", "/schedule/appointments/{trip_id}/return-ready"),
 }
 
 
