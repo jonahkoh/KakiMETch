@@ -8,6 +8,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
+*.egg-info/
 
 # Next.js
 frontend/node_modules/

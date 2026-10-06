@@ -27,7 +27,12 @@ export default defineConfig({
     command: "npm run dev -- --hostname 127.0.0.1 --port 3100",
     url: "http://127.0.0.1:3100",
     reuseExistingServer: !process.env.CI,
-    env: { NEXT_PUBLIC_API_URL: "" },
+    env: {
+      NEXT_PUBLIC_ASSESSMENT_API_URL: "",
+      NEXT_PUBLIC_MATCHING_API_URL: "",
+      NEXT_PUBLIC_REGISTRY_API_URL: "",
+      NEXT_PUBLIC_SCHEDULING_API_URL: "",
+    },
     timeout: 120_000,
   },
 });

@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kakimetch
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kakimetch/KakiMETch.git
+    # Switch to main once this branch and PR #18 are merged.
+    targetRevision: feat/k8s-minikube-argocd
+    path: k8s/app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kakimetch
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

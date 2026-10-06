@@ -50,8 +50,18 @@ jobs:
       - run: npm run test:e2e
 
   backend:
-    name: Backend
+    name: Backend (${{ matrix.unit }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unit:
+          - libs/kakimetch_common
+          - services/assessment
+          - services/matching
+          - services/registry
+          - services/scheduling
+          - scripts
     defaults:
       run:
         working-directory: backend
@@ -61,16 +71,28 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: |
-            backend/requirements.txt
-            backend/requirements-dev.txt
+          cache-dependency-path: backend/**/requirements*.txt
       - run: python -m pip install --upgrade pip
-      - run: python -m pip install -r requirements.txt -r requirements-dev.txt
-      - run: black --check app tests scripts
-      - run: pytest
+      - name: Install shared lib, dev tools and unit requirements
+        run: |
+          reqs="-r requirements-dev.txt"
+          if [ -f "${{ matrix.unit }}/requirements.txt" ]; then reqs="$reqs -r ${{ matrix.unit }}/requirements.txt"; fi
+          echo "REQS=$reqs" >> "$GITHUB_ENV"
+          python -m pip install -e libs/kakimetch_common $reqs
+      - run: black --check ${{ matrix.unit }}
+      - run: pytest ${{ matrix.unit }}
       - name: Python dependency audit report
         continue-on-error: true
-        run: pip-audit --requirement requirements.txt --requirement requirements-dev.txt --vulnerability-service osv
+        run: pip-audit $REQS --vulnerability-service osv
+
+  docker:
+    name: Docker images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create placeholder env file (no secrets)
+        run: touch backend/.env
+      - run: docker compose build
 
   secrets:
     name: Secrets
