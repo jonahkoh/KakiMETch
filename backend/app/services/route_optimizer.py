@@ -107,9 +107,7 @@ def optimise_routes(
         return_dropoff_index = len(addresses)
         addresses.append(trip.pickup_address)
         node_metadata.append((trip.id, "return_dropoff", trip.pickup_address))
-        pairs.append(
-            (return_pickup_index, return_dropoff_index, trip.id, True)
-        )
+        pairs.append((return_pickup_index, return_dropoff_index, trip.id, True))
 
     matrix_result = travel_time_provider.get_matrix(addresses)
     travel_minutes = [
@@ -120,9 +118,9 @@ def optimise_routes(
     routing = pywrapcp.RoutingModel(manager)
 
     def travel_callback(from_index: int, to_index: int) -> int:
-        return travel_minutes[
-            manager.IndexToNode(from_index)
-        ][manager.IndexToNode(to_index)]
+        return travel_minutes[manager.IndexToNode(from_index)][
+            manager.IndexToNode(to_index)
+        ]
 
     transit_index = routing.RegisterTransitCallback(travel_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_index)
@@ -136,7 +134,9 @@ def optimise_routes(
         dropoff_index = manager.NodeToIndex(dropoff_node)
         if is_return:
             ready = minutes(trip.return_ready_time)
-            time_dimension.CumulVar(pickup_index).SetRange(ready, min(ready + 60, 24 * 60))
+            time_dimension.CumulVar(pickup_index).SetRange(
+                ready, min(ready + 60, 24 * 60)
+            )
             time_dimension.CumulVar(dropoff_index).SetRange(ready, 24 * 60)
             # Return work is optional so it can never make an outbound late.
             routing.AddDisjunction([pickup_index], 480)
@@ -243,7 +243,9 @@ def optimise_routes(
         appointment_order: list[UUID] = []
         while not routing.IsEnd(index):
             next_index = solution.Value(routing.NextVar(index))
-            total_travel += routing.GetArcCostForVehicle(index, next_index, vehicle_index)
+            total_travel += routing.GetArcCostForVehicle(
+                index, next_index, vehicle_index
+            )
             node = manager.IndexToNode(index)
             trip_id, kind, address = node_metadata[node]
             if trip_id is not None:
@@ -264,7 +266,9 @@ def optimise_routes(
         lanes.append(
             OptimisedLane(
                 vehicle_id=vehicle.id,
-                assignments=[assignments_by_trip[trip_id] for trip_id in appointment_order],
+                assignments=[
+                    assignments_by_trip[trip_id] for trip_id in appointment_order
+                ],
             )
         )
 

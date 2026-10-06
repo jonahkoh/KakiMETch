@@ -44,8 +44,7 @@ class ScheduleAppointmentNotFoundError(Exception):
 
 
 def _load_vehicles(cursor) -> list[Mapping[str, object]]:
-    cursor.execute(
-        """
+    cursor.execute("""
         select
             vehicles.id,
             vehicles.plate_number,
@@ -58,8 +57,7 @@ def _load_vehicles(cursor) -> list[Mapping[str, object]]:
         join public.drivers on drivers.id = vehicles.driver_id
         where vehicles.active = true and drivers.active = true
         order by vehicles.plate_number
-        """
-    )
+        """)
     return cursor.fetchall()
 
 
@@ -273,14 +271,10 @@ def update_manual_plan(plan_id: UUID, update: ManualPlanUpdate) -> RoutePlan:
                 (plan_id,),
             )
             existing = {row["trip_id"] for row in cursor.fetchall()}
-            submitted = {
-                trip_id for lane in update.lanes for trip_id in lane.trip_ids
-            }
+            submitted = {trip_id for lane in update.lanes for trip_id in lane.trip_ids}
             if existing != submitted:
                 raise InvalidManualPlanError
-            cursor.execute(
-                "select id from public.vehicles where active = true"
-            )
+            cursor.execute("select id from public.vehicles where active = true")
             valid_vehicles = {row["id"] for row in cursor.fetchall()}
             if any(lane.vehicle_id not in valid_vehicles for lane in update.lanes):
                 raise InvalidManualPlanError

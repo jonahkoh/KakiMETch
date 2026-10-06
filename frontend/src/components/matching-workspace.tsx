@@ -1251,8 +1251,8 @@ function ConfirmationView({
       <p className="eyebrow">Escort confirmed</p>
       <h2>{result.escortName} is assigned</h2>
       <p>
-        {result.trip.elderly_name} · {formatDate(result.trip.appt_date)}{" "}
-        at {formatTime(result.trip.appt_time)}
+        {result.trip.elderly_name} · {formatDate(result.trip.appt_date)} at{" "}
+        {formatTime(result.trip.appt_time)}
       </p>
       <dl>
         <div>

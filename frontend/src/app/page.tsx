@@ -75,10 +75,10 @@ export default function LandingPage() {
             <p className="eyebrow">For Loving Heart MET coordinators</p>
             <h1>Plan the day, then keep the final say</h1>
             <p className="hero-lede">
-              KakiMETch allocates patient appointments across Loving Heart&apos;s
-              vehicles to minimise travel time and protect hospital arrival
-              deadlines. Escort matching remains visible on the same schedule,
-              and every allocation stays editable.
+              KakiMETch allocates patient appointments across Loving
+              Heart&apos;s vehicles to minimise travel time and protect hospital
+              arrival deadlines. Escort matching remains visible on the same
+              schedule, and every allocation stays editable.
             </p>
             <div className="hero-actions">
               <Link href="/app/schedule" className="primary-button">
@@ -173,7 +173,9 @@ export default function LandingPage() {
             </div>
             <div className="closing-copy">
               <h2>Ready to plan today&apos;s trips?</h2>
-              <p>Open the daily schedule to allocate vehicles and review escorts.</p>
+              <p>
+                Open the daily schedule to allocate vehicles and review escorts.
+              </p>
               <div className="hero-actions">
                 <Link href="/app/schedule" className="primary-button">
                   Open the tool

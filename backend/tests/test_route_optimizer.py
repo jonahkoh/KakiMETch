@@ -32,7 +32,10 @@ class ClusteredTravelTimes:
             return 90 * 60
 
         return TravelTimeMatrix(
-            [[duration(origin, destination) for destination in addresses] for origin in addresses],
+            [
+                [duration(origin, destination) for destination in addresses]
+                for origin in addresses
+            ],
             "Clustered test times",
         )
 
@@ -50,9 +53,7 @@ def test_optimizer_meets_outbound_arrival_window_and_allocates_returns():
         time(11),
     )
 
-    result = optimise_routes(
-        date(2026, 10, 7), vehicles, [trip], FixedTravelTimes()
-    )
+    result = optimise_routes(date(2026, 10, 7), vehicles, [trip], FixedTravelTimes())
 
     assignments = [item for lane in result.lanes for item in lane.assignments]
     assert len(assignments) == 1
@@ -73,8 +74,6 @@ def test_optimizer_uses_second_vehicle_when_it_reduces_total_travel():
         OptimisationTrip(uuid4(), time(8), "East pickup", "East hospital", time(13)),
     ]
 
-    result = optimise_routes(
-        date(2026, 10, 7), vehicles, trips, ClusteredTravelTimes()
-    )
+    result = optimise_routes(date(2026, 10, 7), vehicles, trips, ClusteredTravelTimes())
 
     assert sum(bool(lane.assignments) for lane in result.lanes) == 2

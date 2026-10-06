@@ -9,7 +9,6 @@ import httpx
 
 from app.config import get_mapbox_access_token
 
-
 LH_SERVICE_CENTRE = "600210, Singapore"
 
 
@@ -37,20 +36,27 @@ class MapboxTravelTimeProvider:
 
         # Mapbox accepts at most 25 coordinates per matrix request. Splitting into
         # 12x12 asymmetric blocks supports a full day without truncating stops.
-        groups = [list(range(start, min(start + 12, size))) for start in range(0, size, 12)]
+        groups = [
+            list(range(start, min(start + 12, size))) for start in range(0, size, 12)
+        ]
         with httpx.Client(timeout=self.timeout_seconds) as client:
             for source_indexes, destination_indexes in product(groups, groups):
                 block_coordinates = [coordinates[index] for index in source_indexes]
-                block_coordinates += [coordinates[index] for index in destination_indexes]
+                block_coordinates += [
+                    coordinates[index] for index in destination_indexes
+                ]
                 coordinate_path = ";".join(
-                    f"{longitude},{latitude}" for longitude, latitude in block_coordinates
+                    f"{longitude},{latitude}"
+                    for longitude, latitude in block_coordinates
                 )
                 destination_offset = len(source_indexes)
                 response = client.get(
                     "https://api.mapbox.com/directions-matrix/v1/mapbox/driving/"
                     + coordinate_path,
                     params={
-                        "sources": ";".join(str(index) for index in range(destination_offset)),
+                        "sources": ";".join(
+                            str(index) for index in range(destination_offset)
+                        ),
                         "destinations": ";".join(
                             str(index)
                             for index in range(
@@ -125,7 +131,9 @@ class LocalEstimateTravelTimeProvider:
                     row.append(0)
                     continue
                 digest = hashlib.sha256(
-                    "|".join(sorted((origin.casefold(), destination.casefold()))).encode()
+                    "|".join(
+                        sorted((origin.casefold(), destination.casefold()))
+                    ).encode()
                 ).digest()
                 # 12-30 minutes gives the optimiser realistic-enough prototype
                 # spacing while the UI clearly labels that these are estimates.

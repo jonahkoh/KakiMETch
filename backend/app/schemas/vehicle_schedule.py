@@ -93,5 +93,7 @@ class ManualPlanUpdate(BaseModel):
     def trips_must_be_unique(self) -> "ManualPlanUpdate":
         trip_ids = [trip_id for lane in self.lanes for trip_id in lane.trip_ids]
         if len(trip_ids) != len(set(trip_ids)):
-            raise ValueError("Each appointment must appear in exactly one vehicle lane.")
+            raise ValueError(
+                "Each appointment must appear in exactly one vehicle lane."
+            )
         return self
