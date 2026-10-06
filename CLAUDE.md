@@ -22,6 +22,7 @@ cd backend && pytest services/matching/tests/test_matching_service.py::test_rank
 cd backend && black services libs scripts  # CI runs black --check per unit
 python -m scripts.load_demo_data           # from backend/: clients via registry POST /registry/import (REGISTRY_API_URL), escorts + trips direct (idempotent)
 python -m scripts.prepare_matching_demo    # from backend/: POSTs pending trips to the assessment service (ASSESSMENT_API_URL)
+make k8s-images && make k8s-secret && make k8s-forward   # minikube + Argo CD; see k8s/README.md
 ```
 
 **Frontend** (run from `frontend/`; `.env.local` holds `NEXT_PUBLIC_{ASSESSMENT,MATCHING,REGISTRY,SCHEDULING}_API_URL`, defaults ports 8001–8004):
@@ -54,6 +55,7 @@ frontend (Next.js 16) --fetch--> assessment :8001 | matching :8002 | registry :8
 - **Layering inside a service**: routes (thin, map service exceptions to status codes) → services (logic + raw SQL) → `get_connection()` (one psycopg2 connection per call, `RealDictCursor`, commit/rollback). No ORM.
 - **Ownership**: assessment = accept/reject a trip; matching = top-K `rank_escorts` (pure), queue, editable matching profile, full roster for manual override; registry = patient CRUD, soft delete/restore, `.xlsx` import; scheduling = create trip, confirm escort (`AssignmentOverrideRequiredError` unless override reason), cancel, schedule view.
 - **Tests** don't need a database: pure functions are tested directly, DB services by monkeypatching `get_connection` on the service module. Each service has `tests/test_routes.py` pinning its exact `(method, path)` set — update it when adding an endpoint.
+- **Kubernetes**: `k8s/app/` is plain YAML (Deployment + Service per service) deployed by Argo CD via `k8s/argocd-app.yaml`; the `kakimetch-env` Secret is created by hand from `backend/.env` and never committed. Images are `kakimetch-<svc>:latest` built into minikube (`imagePullPolicy: Never`).
 - **Trip lifecycle** is driven by `trips.status` (pending → accepted/rejected → scheduled); matching is only allowed on accepted trips.
 
 ## Database

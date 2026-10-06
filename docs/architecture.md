@@ -27,5 +27,6 @@ escort who fails a hard filter needs `assignment_override` plus a written reason
 |---|---|
 | Docker | `docker compose up --build` (repo root; needs `backend/.env`) |
 | Local | `make install-backend && make dev` |
+| Kubernetes | minikube + Argo CD, see [k8s/README.md](../k8s/README.md) |
 | Database | apply `supabase/migrations/*.sql` in filename order |
 | Demo data | `cd backend && python -m scripts.load_demo_data`, then `python -m scripts.prepare_matching_demo` |
