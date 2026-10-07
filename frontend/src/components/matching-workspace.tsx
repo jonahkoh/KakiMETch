@@ -95,13 +95,8 @@ function toQueueItem(trip: CaseTrip): MatchingQueueItem {
   };
 }
 
-function formatDate(value: string, includeYear = false) {
-  return new Intl.DateTimeFormat("en-SG", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    ...(includeYear ? { year: "numeric" } : {}),
-  }).format(new Date(`${value}T00:00:00`));
+function formatDate(value: string) {
+  return value.slice(0, 10);
 }
 
 function formatTime(value: string) {
@@ -259,6 +254,7 @@ export function MatchingWorkspace() {
           <Logo />
         </Link>
         <nav className="header-nav" aria-label="KakiMETch sections">
+          <Link href="/app/schedule">Daily schedule</Link>
           <Link href="/app/matching" aria-current="page">
             Escort matching
           </Link>
@@ -399,7 +395,7 @@ export function MatchingWorkspace() {
                     <span className="module-detail">
                       <CalendarDays size={19} aria-hidden="true" />
                       <span>
-                        {formatDate(trip.appt_date, true)} at{" "}
+                        {formatDate(trip.appt_date)} at{" "}
                         {formatTime(trip.appt_time)}
                       </span>
                     </span>
@@ -474,7 +470,7 @@ export function MatchingWorkspace() {
                     <span className="module-detail">
                       <CalendarDays size={19} aria-hidden="true" />
                       <span>
-                        {formatDate(trip.appt_date, true)} at{" "}
+                        {formatDate(trip.appt_date)} at{" "}
                         {formatTime(trip.appt_time)}
                       </span>
                     </span>
@@ -814,7 +810,7 @@ function MatchingCase({
               <CalendarDays size={18} aria-hidden="true" /> Appointment
             </dt>
             <dd>
-              {formatDate(trip.appt_date, true)} at {formatTime(trip.appt_time)}
+              {formatDate(trip.appt_date)} at {formatTime(trip.appt_time)}
             </dd>
           </div>
           <div>
@@ -1255,8 +1251,8 @@ function ConfirmationView({
       <p className="eyebrow">Escort confirmed</p>
       <h2>{result.escortName} is assigned</h2>
       <p>
-        {result.trip.elderly_name} · {formatDate(result.trip.appt_date, true)}{" "}
-        at {formatTime(result.trip.appt_time)}
+        {result.trip.elderly_name} · {formatDate(result.trip.appt_date)} at{" "}
+        {formatTime(result.trip.appt_time)}
       </p>
       <dl>
         <div>

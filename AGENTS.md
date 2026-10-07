@@ -229,6 +229,11 @@ KakiMETch backend (FastAPI, direct Postgres access)
 Assessment and matching are independent — matching is only invoked after a referral is
 accepted; a rejected referral never reaches the matching engine.
 
+Implementation note: the backend is split into four separately deployable services
+(assessment, matching, registry, scheduling) under `backend/services/`, each with its own
+Dockerfile, sharing `backend/libs/kakimetch_common`. The frontend calls each service directly
+via its own `NEXT_PUBLIC_*_API_URL`. Current diagram: [docs/architecture.md](docs/architecture.md).
+
 ## 12. User flow (agreed sketch)
 
 ```

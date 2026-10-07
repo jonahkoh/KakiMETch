@@ -430,9 +430,14 @@ input::placeholder {
   width: min(760px, 100%);
   height: 100dvh;
   overflow-y: auto;
+  scroll-padding-top: 84px;
   background: var(--paper);
   box-shadow: var(--shadow-drawer);
   animation: drawer-in 190ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.patient-drawer .text-button {
+  scroll-margin-block: 84px 24px;
 }
 
 .drawer-header {
@@ -1313,16 +1318,27 @@ input::placeholder {
 
 @media (max-width: 760px) {
   .product-header {
+    flex-wrap: wrap;
     padding: 12px 18px;
   }
 
-  .product-header > div:nth-child(2) {
-    display: grid;
-    gap: 0;
+  .header-logo {
+    margin-right: auto;
   }
 
-  .product-header div span {
-    font-size: 0.8rem;
+  .header-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    order: 2;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .header-nav a {
+    min-width: 0;
+    justify-content: center;
+    padding-inline: 6px;
+    text-align: center;
   }
 
   .demo-label {
@@ -1443,6 +1459,420 @@ input::placeholder {
 
   .modal-dialog {
     padding: 22px;
+  }
+}
+
+/* Daily vehicle schedule */
+
+.schedule-overview {
+  width: min(1440px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 42px 0 72px;
+}
+
+.schedule-title-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+
+.schedule-title-row h1 {
+  margin-bottom: 8px;
+  font-size: clamp(1.85rem, 3vw, 2.45rem);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.schedule-title-row > div:first-child > p:last-child {
+  margin: 0;
+  color: var(--muted);
+}
+
+.schedule-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.date-control {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.date-control input,
+.schedule-form-grid input,
+.schedule-form-grid select {
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.plan-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  padding: 13px 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.plan-summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.schedule-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px 14px;
+  margin: 0 0 18px;
+  border-radius: 8px;
+}
+
+.schedule-alert.error {
+  background: var(--error-soft);
+  color: var(--error);
+}
+.schedule-alert.warning {
+  border: 1px solid #ead8b7;
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.schedule-alert.info {
+  border: 1px solid var(--line);
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+}
+
+.schedule-loading,
+.schedule-empty {
+  padding: 48px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--muted);
+  text-align: center;
+}
+
+.schedule-empty svg {
+  color: var(--teal);
+}
+.schedule-empty h2 {
+  margin: 12px 0 6px;
+  color: var(--ink);
+}
+.schedule-empty p {
+  margin: 0;
+}
+
+.unallocated-strip {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 20px;
+  padding: 20px;
+  margin-bottom: 22px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--paper-soft);
+}
+
+.unallocated-strip h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.unallocated-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.vehicle-swimlanes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.vehicle-lane {
+  min-height: 380px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: #eef1ee;
+}
+
+.vehicle-lane-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--teal-dark);
+  color: white;
+}
+
+.vehicle-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.vehicle-identity h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+}
+.vehicle-identity p,
+.vehicle-availability span {
+  margin: 1px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.8rem;
+}
+.vehicle-availability {
+  display: grid;
+  justify-items: end;
+  text-align: right;
+}
+.lane-appointments {
+  display: grid;
+  gap: 12px;
+  min-height: 310px;
+  padding: 14px;
+}
+.lane-empty {
+  align-self: center;
+  padding: 36px;
+  color: var(--quiet);
+  text-align: center;
+}
+
+.route-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  box-shadow: 0 2px 8px rgba(24, 34, 31, 0.04);
+}
+
+[draggable="true"] .route-card {
+  cursor: grab;
+}
+[draggable="true"] .route-card:active {
+  cursor: grabbing;
+}
+.route-card-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.drag-grip {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--quiet);
+}
+.route-card-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+.route-card-heading h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.route-card-heading span {
+  color: var(--quiet);
+  font-size: 0.78rem;
+}
+
+.remove-appointment {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--quiet);
+  cursor: pointer;
+}
+
+.remove-appointment:hover {
+  background: var(--error-soft);
+  color: var(--error);
+}
+.route-card-route {
+  display: grid;
+  gap: 7px;
+  padding: 12px 0;
+}
+.route-card-route p {
+  display: grid;
+  grid-template-columns: 17px auto;
+  align-items: start;
+  gap: 7px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.route-card-route p strong {
+  color: var(--ink);
+}
+
+.return-ready-control {
+  display: grid;
+  grid-template-columns: 17px auto 92px 1fr;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.return-ready-control input {
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.return-ready-control small {
+  color: var(--quiet);
+}
+
+.route-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding-top: 11px;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
+}
+
+.route-card-footer > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.escort-ready {
+  color: var(--success);
+}
+.escort-needed {
+  color: var(--warning);
+}
+.route-card-footer a {
+  color: var(--teal-dark);
+  font-weight: 650;
+}
+.order-buttons {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: auto;
+}
+.order-buttons button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  cursor: pointer;
+}
+.order-buttons button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.schedule-dialog {
+  width: min(620px, 100%);
+}
+.dialog-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.dialog-heading h2 {
+  margin: 0;
+}
+.schedule-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.schedule-form-grid label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+.schedule-form-grid .wide-field {
+  grid-column: 1 / -1;
+}
+.form-help {
+  margin: 18px 0;
+  color: var(--quiet);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 920px) {
+  .schedule-title-row,
+  .unallocated-strip {
+    display: grid;
+  }
+  .schedule-actions {
+    justify-content: flex-start;
+  }
+  .vehicle-swimlanes,
+  .unallocated-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .schedule-overview {
+    width: min(100% - 28px, 1440px);
+    padding-top: 30px;
+  }
+  .schedule-actions,
+  .schedule-actions > *,
+  .date-control input {
+    width: 100%;
+  }
+  .vehicle-lane-header,
+  .route-card-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .vehicle-availability {
+    justify-items: start;
+    text-align: left;
+  }
+  .schedule-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .schedule-form-grid .wide-field {
+    grid-column: auto;
   }
 }
 

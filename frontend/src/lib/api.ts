@@ -63,12 +63,81 @@ export interface AppointmentCreate {
   elderly_id: string;
   appt_date: string;
   appt_time: string;
+  pickup_address: string;
   destination: string;
+  return_ready_time: string;
 }
 
 export interface AppointmentCreated extends AppointmentCreate {
   trip_id: string;
   status: "pending";
+}
+
+export interface VehicleSummary {
+  id: string;
+  plate_number: string;
+  driver_name: string;
+  available_from: string;
+  available_until: string;
+  passenger_pair_capacity: number;
+  max_daily_services: number;
+}
+
+export interface ScheduleAppointment {
+  trip_id: string;
+  elderly_id: string;
+  elderly_name: string;
+  appt_date: string;
+  appt_time: string;
+  pickup_address: string | null;
+  destination: string;
+  return_ready_time: string | null;
+  escort_required: boolean;
+  escort_name: string | null;
+}
+
+export interface RouteStop {
+  kind:
+    | "depot_start"
+    | "outbound_pickup"
+    | "outbound_dropoff"
+    | "return_pickup"
+    | "return_dropoff"
+    | "depot_end";
+  address: string;
+  planned_time: string;
+}
+
+export interface RouteAssignment {
+  trip_id: string;
+  sequence: number;
+  outbound_pickup_at: string | null;
+  outbound_dropoff_at: string | null;
+  return_pickup_at: string | null;
+  return_dropoff_at: string | null;
+  stops: RouteStop[];
+}
+
+export interface VehicleLane {
+  vehicle: VehicleSummary;
+  assignments: RouteAssignment[];
+}
+
+export interface RoutePlan {
+  id: string;
+  service_date: string;
+  status: "optimised" | "manually_adjusted";
+  matrix_source: string;
+  total_travel_minutes: number;
+  unallocated_returns: string[];
+  lanes: VehicleLane[];
+}
+
+export interface DaySchedule {
+  service_date: string;
+  vehicles: VehicleSummary[];
+  appointments: ScheduleAppointment[];
+  plan: RoutePlan | null;
 }
 
 export interface AssessmentResult {
@@ -103,13 +172,26 @@ export class ApiError extends Error {
   }
 }
 
-const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
-).replace(/\/$/, "");
+// Next.js only inlines NEXT_PUBLIC_* variables read by literal name.
+const SERVICE_URLS = {
+  assessment:
+    process.env.NEXT_PUBLIC_ASSESSMENT_API_URL ?? "http://localhost:8001",
+  matching: process.env.NEXT_PUBLIC_MATCHING_API_URL ?? "http://localhost:8002",
+  registry: process.env.NEXT_PUBLIC_REGISTRY_API_URL ?? "http://localhost:8003",
+  scheduling:
+    process.env.NEXT_PUBLIC_SCHEDULING_API_URL ?? "http://localhost:8004",
+};
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+type Service = keyof typeof SERVICE_URLS;
+
+async function request<T>(
+  service: Service,
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
   const hasJsonBody = Boolean(init?.body) && !(init?.body instanceof FormData);
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const baseUrl = SERVICE_URLS[service].replace(/\/$/, "");
+  const response = await fetch(`${baseUrl}${path}`, {
     ...init,
     cache: "no-store",
     headers: {
@@ -133,33 +215,76 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const getMatchingQueue = () =>
-  request<MatchingQueueItem[]>("/matching-queue");
+  request<MatchingQueueItem[]>("matching", "/matching-queue");
 
-export const getScheduledTrips = () => request<ScheduledTrip[]>("/schedule");
+export const getScheduledTrips = () =>
+  request<ScheduledTrip[]>("scheduling", "/schedule");
+
+export const getDaySchedule = (serviceDate: string) =>
+  request<DaySchedule>(
+    "scheduling",
+    `/schedule/day?service_date=${serviceDate}`,
+  );
+
+export const optimiseDaySchedule = (serviceDate: string) =>
+  request<RoutePlan>("scheduling", "/schedule/optimise", {
+    method: "POST",
+    body: JSON.stringify({ service_date: serviceDate }),
+  });
+
+export const saveManualPlan = (
+  planId: string,
+  lanes: { vehicle_id: string; trip_ids: string[] }[],
+) =>
+  request<RoutePlan>("scheduling", `/schedule/plans/${planId}`, {
+    method: "PUT",
+    body: JSON.stringify({ lanes }),
+  });
+
+export const removeScheduleAppointment = (tripId: string) =>
+  request<void>("scheduling", `/schedule/appointments/${tripId}`, {
+    method: "DELETE",
+  });
+
+export const updateReturnReadyTime = (
+  tripId: string,
+  returnReadyTime: string,
+) =>
+  request<void>("scheduling", `/schedule/appointments/${tripId}/return-ready`, {
+    method: "PATCH",
+    body: JSON.stringify({ return_ready_time: returnReadyTime }),
+  });
 
 export const getEscortSuggestions = (tripId: string) =>
-  request<MatchResult>(`/trips/${tripId}/escort-suggestions?limit=3`);
+  request<MatchResult>(
+    "matching",
+    `/trips/${tripId}/escort-suggestions?limit=3`,
+  );
 
 export const getEscortOptions = (tripId: string) =>
-  request<EscortOption[]>(`/trips/${tripId}/escort-options`);
+  request<EscortOption[]>("matching", `/trips/${tripId}/escort-options`);
 
 export const updateMatchingProfile = (
   elderlyId: string,
   update: MatchingProfileUpdate,
 ) =>
-  request<MatchingProfile>(`/elderly-clients/${elderlyId}/matching-profile`, {
-    method: "PATCH",
-    body: JSON.stringify(update),
-  });
+  request<MatchingProfile>(
+    "matching",
+    `/elderly-clients/${elderlyId}/matching-profile`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(update),
+    },
+  );
 
 export const createAppointment = (appointment: AppointmentCreate) =>
-  request<AppointmentCreated>("/trips", {
+  request<AppointmentCreated>("scheduling", "/trips", {
     method: "POST",
     body: JSON.stringify(appointment),
   });
 
 export const assessAppointment = (tripId: string) =>
-  request<AssessmentResult>(`/trips/${tripId}/assessment`, {
+  request<AssessmentResult>("assessment", `/trips/${tripId}/assessment`, {
     method: "POST",
   });
 
@@ -168,7 +293,7 @@ export const confirmEscort = (
   escortId: string,
   overrideReason?: string,
 ) =>
-  request<TripConfirmation>(`/trips/${tripId}/confirm-escort`, {
+  request<TripConfirmation>("scheduling", `/trips/${tripId}/confirm-escort`, {
     method: "POST",
     body: JSON.stringify({
       escort_id: escortId,
@@ -178,9 +303,13 @@ export const confirmEscort = (
   });
 
 export const cancelAssignment = (tripId: string) =>
-  request<TripCancellation>(`/trips/${tripId}/cancel-assignment`, {
-    method: "POST",
-  });
+  request<TripCancellation>(
+    "scheduling",
+    `/trips/${tripId}/cancel-assignment`,
+    {
+      method: "POST",
+    },
+  );
 
 export type MobilityStatus =
   | "ambulant"
@@ -249,40 +378,44 @@ export interface ImportSummary {
 }
 
 export const getPatients = () =>
-  request<PatientSummary[]>("/registry/patients");
+  request<PatientSummary[]>("registry", "/registry/patients");
 
 export const getDeletedPatients = () =>
-  request<PatientSummary[]>("/registry/patients?deleted=true");
+  request<PatientSummary[]>("registry", "/registry/patients?deleted=true");
 
 export const getPatient = (patientId: string) =>
-  request<PatientDetail>(`/registry/patients/${patientId}`);
+  request<PatientDetail>("registry", `/registry/patients/${patientId}`);
 
 export const createPatient = (patient: PatientWrite) =>
-  request<PatientDetail>("/registry/patients", {
+  request<PatientDetail>("registry", "/registry/patients", {
     method: "POST",
     body: JSON.stringify(patient),
   });
 
 export const updatePatient = (patientId: string, patient: PatientWrite) =>
-  request<PatientDetail>(`/registry/patients/${patientId}`, {
+  request<PatientDetail>("registry", `/registry/patients/${patientId}`, {
     method: "PUT",
     body: JSON.stringify(patient),
   });
 
 export const deletePatient = (patientId: string) =>
-  request<void>(`/registry/patients/${patientId}`, {
+  request<void>("registry", `/registry/patients/${patientId}`, {
     method: "DELETE",
   });
 
 export const restorePatient = (patientId: string) =>
-  request<PatientDetail>(`/registry/patients/${patientId}/restore`, {
-    method: "POST",
-  });
+  request<PatientDetail>(
+    "registry",
+    `/registry/patients/${patientId}/restore`,
+    {
+      method: "POST",
+    },
+  );
 
 export const importPatients = (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
-  return request<ImportSummary>("/registry/import", {
+  return request<ImportSummary>("registry", "/registry/import", {
     method: "POST",
     body: formData,
   });

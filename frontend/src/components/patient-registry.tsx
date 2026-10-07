@@ -82,12 +82,7 @@ function friendlyError(error: unknown) {
 
 function formatDate(value: string | null) {
   if (!value) return "No visits recorded";
-  const dateValue = value.includes("T") ? value : `${value}T00:00:00`;
-  return new Intl.DateTimeFormat("en-SG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(dateValue));
+  return value.slice(0, 10);
 }
 
 function formatSubsidy(value: number | null) {
@@ -174,6 +169,7 @@ export function PatientRegistry() {
           <Logo />
         </Link>
         <nav className="header-nav" aria-label="KakiMETch sections">
+          <Link href="/app/schedule">Daily schedule</Link>
           <Link href="/app/matching">Escort matching</Link>
           <Link href="/app/registry" aria-current="page">
             Patient registry
@@ -619,7 +615,9 @@ function CreateAppointmentForm({
 }) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [pickupAddress, setPickupAddress] = useState("");
   const [destination, setDestination] = useState("");
+  const [returnReadyTime, setReturnReadyTime] = useState("");
 
   const [saveState, setSaveState] = useState<LoadState>("idle");
   const [saveError, setSaveError] = useState("");
@@ -650,6 +648,18 @@ function CreateAppointmentForm({
       return;
     }
 
+    if (!pickupAddress.trim()) {
+      setSaveError("Pickup address is required for vehicle scheduling.");
+      setSaveState("error");
+      return;
+    }
+
+    if (!returnReadyTime) {
+      setSaveError("Estimated return-ready time is required.");
+      setSaveState("error");
+      return;
+    }
+
     setSaveState("loading");
     setSaveError("");
 
@@ -658,7 +668,9 @@ function CreateAppointmentForm({
         elderly_id: patient.id,
         appt_date: date,
         appt_time: time,
+        pickup_address: pickupAddress.trim(),
         destination: destination.trim(),
+        return_ready_time: returnReadyTime,
       });
 
       setCreatedAppointment(appointment);
@@ -708,7 +720,15 @@ function CreateAppointmentForm({
             </p>
 
             <p>
+              <strong>Pickup:</strong> {pickupAddress}
+            </p>
+
+            <p>
               <strong>Destination:</strong> {destination}
+            </p>
+
+            <p>
+              <strong>Estimated return-ready:</strong> {returnReadyTime}
             </p>
           </div>
 
@@ -785,12 +805,33 @@ function CreateAppointmentForm({
           </label>
 
           <label>
+            <span>Pickup address</span>
+            <input
+              type="text"
+              value={pickupAddress}
+              onChange={(event) => setPickupAddress(event.target.value)}
+              placeholder="Use this appointment’s actual pickup point"
+              required
+            />
+          </label>
+
+          <label>
             <span>Destination</span>
             <input
               type="text"
               value={destination}
               onChange={(event) => setDestination(event.target.value)}
               placeholder="e.g. Ng Teng Fong General Hospital"
+              required
+            />
+          </label>
+
+          <label>
+            <span>Estimated ready for return</span>
+            <input
+              type="time"
+              value={returnReadyTime}
+              onChange={(event) => setReturnReadyTime(event.target.value)}
               required
             />
           </label>
